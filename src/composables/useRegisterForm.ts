@@ -1,4 +1,5 @@
-import { reactive, ref, computed } from 'vue'
+import { reactive, ref, computed, watch } from 'vue'
+import { saveFormData, getFormData, dbPromise } from '@/utils/db'
 
 export interface Education {
   level: string
@@ -121,4 +122,29 @@ export function useRegisterForm() {
     submitForm,
     validationError
   }
+}
+
+// Load data saat app dibuka
+;(async () => {
+  const saved = await getFormData('userForm')
+  if (saved) Object.assign(form, saved)
+})()
+
+// Auto-save setiap kali form berubah
+watch(
+  form,
+  async (newVal) => {
+    try {
+      const plain = JSON.parse(JSON.stringify(newVal))
+      await saveFormData('userForm', plain)
+    } catch (e) {
+      console.error('Failed to save form:', e)
+    }
+  },
+  { deep: true },
+)
+
+export async function saveFile(key: string, file: File) {
+  const db = await dbPromise
+  await db.put('form', file, key)
 }
