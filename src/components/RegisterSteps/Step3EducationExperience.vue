@@ -1,32 +1,36 @@
 <template>
   <div>
-    <h4>Pendidikan & Pengalaman</h4>
-
-    <div v-for="(edu, i) in form.educations" :key="i" class="border p-2 mb-2 rounded">
-      <FormInput v-model="edu.level" label="Pendidikan Terakhir" required :showError="validationError" />
+    <h5>Pendidikan</h5>
+    <div v-for="(edu, i) in form.educations" :key="i">
+      <FormInput v-model="edu.level" label="Jenjang Pendidikan" required :showError="validationError" />
       <FormInput v-model="edu.major" label="Jurusan" required :showError="validationError" />
-      <FormInput v-model="edu.year" type="number" label="Tahun Lulus" required :showError="validationError" />
-      <button class="btn btn-danger btn-sm" @click="removeEducation(i)">Hapus</button>
-    </div>
-    <div>
-      <button class="btn btn-secondary btn-sm mb-3" @click="addEducation">+ Tambah Pendidikan</button>
-    </div>
+      <FormInput v-model="edu.year" label="Tahun Lulus" type="number" required :showError="validationError" />
 
-    <div v-for="(exp, i) in form.experiences" :key="i" class="border p-2 mb-2 rounded">
+      <!-- Tombol hapus hanya muncul jika lebih dari 1 -->
+      <button class="btn btn-danger mb-2" v-if="form.educations.length > 1" @click="form.educations.splice(i,1)">
+        <i class="bi bi-trash"></i> Hapus
+      </button>
+    </div>
+    <button class="btn btn-primary" @click="form.educations.push({ level:'', major:'', year:null })"><i class="bi bi-plus"></i> Tambah Pendidikan</button>
+
+    <h5 class="mt-4">Pengalaman</h5>
+    <div v-for="(exp, i) in form.experiences" :key="i">
       <FormInput v-model="exp.company" label="Perusahaan" required :showError="validationError" />
-      <FormInput v-model="exp.role" label="Posisi" required :showError="validationError" />
-      <FormInput v-model="exp.years" type="number" label="Lama Kerja (tahun)" required :showError="validationError" />
-      <button class="btn btn-danger btn-sm" @click="removeExperience(i)">Hapus</button>
+      <FormInput v-model="exp.role" label="Posisi/Jabatan" required :showError="validationError" />
+      <FormInput v-model="exp.years" label="Lama Kerja (tahun)" type="number" required :showError="validationError" />
+
+      <!-- Tombol hapus hanya muncul jika lebih dari 1 -->
+      <button class="btn btn-danger mb-2" v-if="form.experiences.length > 1" @click="form.experiences.splice(i,1)">
+        <i class="bi bi-trash"></i> Hapus
+      </button>
     </div>
-    <div>
-      <button class="btn btn-secondary btn-sm" @click="addExperience">+ Tambah Pengalaman</button>
-    </div>
+    <button class="btn btn-primary" @click="form.experiences.push({ company:'', role:'', years:null })"><i class="bi bi-plus"></i> Tambah Pengalaman</button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useRegisterForm } from '@/composables/useRegisterForm'
-import FormInput from '@/components/FormInput.vue'
+import FormInput from '@/components/forms/FormInput.vue'
 
-const { form, addEducation, removeEducation, addExperience, removeExperience, validationError } = useRegisterForm()
+const { form, validationError } = useRegisterForm()
 </script>

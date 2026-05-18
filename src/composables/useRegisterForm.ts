@@ -19,10 +19,14 @@ export interface FormData {
   birthdate: string
   age: number | null
   gender: string
+  religion: string
+  maritalStatus: string
+  childrenCount: number | null
   propinsi: string
   kota: string
   kecamatan: string
   kelurahan: string
+  address: string
   cv: File | null
   coverLetter: File | null
   portfolio: File | null
@@ -40,15 +44,24 @@ const form = reactive<FormData>({
   birthdate: '',
   age: null,
   gender: '',
+  religion: '',
+  maritalStatus: '',
+  childrenCount: null,
   propinsi: '',
   kota: '',
   kecamatan: '',
   kelurahan: '',
+  address: '',
   cv: null,
   coverLetter: null,
   portfolio: null,
-  educations: [],
-  experiences: [],
+  // Inisialisasi dengan 1 item default
+  educations: [
+    { level: '', major: '', year: null }, // default 1 item
+  ],
+  experiences: [
+    { company: '', role: '', years: null }, // default 1 item
+  ]
 })
 
 const validationError = ref(false)
@@ -68,24 +81,40 @@ const updateAge = () => {
   form.age = years
 }
 
-const goNext = () => {
+const errorMessage = ref('')
+
+const goNext = (modalRef?: any) => {
   if (validateStep()) {
     validationError.value = false
     step.value++
   } else {
     validationError.value = true
-    alert('Mohon lengkapi semua field yang wajib diisi sebelum melanjutkan.')
+    
+    if (step.value === 1) errorMessage.value = 'Mohon lengkapi semua data pribadi.'
+    if (step.value === 2) errorMessage.value = 'Mohon lengkapi semua data alamat.'
+    if (step.value === 3)
+      errorMessage.value = 'Minimal 1 data pendidikan dan 1 data pengalaman harus diisi.'
+    modalRef?.show() // panggil modal dari parent
   }
 }
+
 const goPrev = () => {
   if (step.value > 1) step.value--
 }
 
-const validateStep = () => {
-  if (step.value === 1)
-    return form.name && form.email && form.phone && form.birthdate && form.gender
-  if (step.value === 2) return form.propinsi && form.kota && form.kecamatan && form.kelurahan
-  if (step.value === 3) return form.educations.length > 0 && form.experiences.length > 0
+const validateStep = (): boolean => {
+  if (step.value === 1) {
+    return !!(form.name && form.email && form.phone && form.birthdate && form.gender)
+  }
+  if (step.value === 2) {
+    return !!(form.propinsi && form.kota && form.kecamatan && form.kelurahan && form.address)
+  }
+  if (step.value === 3) {
+    const validEdu = form.educations.length > 0 && form.educations.some((e) => e.level && e.major)
+    const validExp =
+      form.experiences.length > 0 && form.experiences.some((e) => e.company && e.role)
+    return validEdu && validExp
+  }
   return true
 }
 
@@ -120,7 +149,8 @@ export function useRegisterForm() {
     removeExperience,
     handleFileUpload,
     submitForm,
-    validationError
+    validationError,
+    errorMessage
   }
 }
 
