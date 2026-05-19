@@ -15,8 +15,9 @@ export interface Experience {
 export interface FormData {
   name: string
   email: string
+  password: string
   phone: string
-  birthdate: string
+  birthdate: Date | null
   age: number | null
   gender: string
   religion: string
@@ -34,14 +35,12 @@ export interface FormData {
   experiences: Experience[]
 }
 
-const step = ref(1)
-const totalSteps = 5
-
 const form = reactive<FormData>({
   name: '',
   email: '',
+  password: '',
   phone: '',
-  birthdate: '',
+  birthdate: null as Date | null,
   age: null,
   gender: '',
   religion: '',
@@ -64,6 +63,8 @@ const form = reactive<FormData>({
   ]
 })
 
+const step = ref(1)
+const totalSteps = 5
 const validationError = ref(false)
 
 const progressPercent = computed(() => Math.round((step.value / totalSteps) * 100))
@@ -89,7 +90,7 @@ const goNext = (modalRef?: any) => {
     step.value++
   } else {
     validationError.value = true
-    
+
     if (step.value === 1) errorMessage.value = 'Mohon lengkapi semua data pribadi.'
     if (step.value === 2) errorMessage.value = 'Mohon lengkapi semua data alamat.'
     if (step.value === 3)
@@ -104,7 +105,7 @@ const goPrev = () => {
 
 const validateStep = (): boolean => {
   if (step.value === 1) {
-    return !!(form.name && form.email && form.phone && form.birthdate && form.gender)
+    return !!(form.name && form.email&& form.password && form.phone && form.birthdate && form.gender)
   }
   if (step.value === 2) {
     return !!(form.propinsi && form.kota && form.kecamatan && form.kelurahan && form.address)

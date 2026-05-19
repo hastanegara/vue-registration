@@ -1,10 +1,18 @@
 <template>
   <div>
     <h4>Data Pribadi</h4>
+    <div class="card text-bg-light mb-3">
+      <div class="card-body">
+        <FormInput v-model="form.email" type="email" label="Email" required :showError="validationError" />
+        <FormInput v-model="form.password" type="password" label="Password" required :showError="validationError" />
+      </div>
+    </div>
     <FormInput v-model="form.name" label="Nama Lengkap" required :showError="validationError" />
-    <FormInput v-model="form.email" type="email" label="Email" required :showError="validationError" />
     <FormInput v-model="form.phone" type="tel" label="Nomor Telepon" required :showError="validationError" />
     <FormInput v-model="form.birthdate" type="date" label="Tanggal Lahir" required :showError="validationError" @change="updateAge" />
+  <div v-if="validationError && !form.birthdate" class="invalid-feedback">
+    Tanggal lahir wajib diisi.
+  </div>
     <FormInput v-model="form.age" type="number" label="Umur" readonly />
     <FormRadioGroup v-model="form.gender" label="Gender" :options="genderOptions" required :showError="validationError" />
 
